@@ -1,6 +1,7 @@
 package pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import utils.WebDriverFactory;
@@ -8,6 +9,7 @@ import utils.WebDriverFactory;
 import java.time.Duration;
 
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class BasePage {
@@ -17,7 +19,7 @@ public class BasePage {
 
     public BasePage() {
         driver = WebDriverFactory.getDriver();
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
     
     
@@ -41,6 +43,10 @@ public class BasePage {
     public void click(By locator) {
         try {
             WebElement element = esperarElement(locator);
+            
+            //Scroll al elemento
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", element);
+            
             element.click();
         } catch (Exception e) {
             throw new RuntimeException("Error al hacer CLICK en: " + locator.toString());
@@ -55,10 +61,36 @@ public class BasePage {
     public void escribir(By locator, String text) {
         try {
             WebElement element = esperarElement(locator);
+            
+            //Scroll al elemento
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", element);
+            
             element.clear();
             element.sendKeys(text);
         } catch (Exception e) {
             throw new RuntimeException("Error al escribir en: " + locator.toString() + " texto: " + text);
+        }
+    }
+    
+    
+	/**
+	 * Metodo para seleccionar elemento
+	 * @author JAIDER GOMEZ
+	 * */
+    public void select(By locator, String texto) {
+        try {
+            WebElement element = esperarElement(locator);
+
+            // Scroll al elemento
+            ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block: 'center'});", element
+            );
+
+            Select select = new Select(element);
+            select.selectByVisibleText(texto);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error al seleccionar '" + texto + "' en: " + locator, e);
         }
     }
     
